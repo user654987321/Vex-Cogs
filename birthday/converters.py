@@ -49,7 +49,7 @@ else:
                 else:
                     raise ValueError
 
-                result = result.replace(year=1, month=1, day=1), tzinfo=ZoneInfo("Europe/Berlin"))
+                result = result.replace(year=1, month=1, day=1, tzinfo=ZoneInfo("Europe/Berlin"))
                 log.trace("parsed time: %s", result)
                 return result
 
