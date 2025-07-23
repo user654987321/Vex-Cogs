@@ -308,14 +308,11 @@ class BirthdayAdminCommands(MixinMeta):
     @bdset.command()
     async def time(self, ctx: commands.Context, *, time: TimeConverter):
         """
-        Set the time of day for the birthday message.
-
-        Minutes are ignored.
+        Tageszeit für die Geburtstagsnachricht festlegen.
 
         **Examples:**
-        - `[p]bdset time 7:00` - set the time to 7:00AM UTC
-        - `[p]bdset time 12AM` - set the time to midnight UTC
-        - `[p]bdset time 3PM` - set the time to 3:00PM UTC
+        - `[p]bdset time 7:00` - Setze die Zeit auf 7 Uhr Morgens
+        - `[p]bdset time 16:00` - Setze die Zeit auf 4 Uhr Nachmittags
         """
         # group has guild check
         if TYPE_CHECKING:
