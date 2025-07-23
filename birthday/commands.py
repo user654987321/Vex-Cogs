@@ -183,7 +183,10 @@ class BirthdayCommands(MixinMeta):
                     else (f" will turn {next_bday_year - birthday_dt.year}")
                 )
             )
-            number_day_mapping[diff.days] = next_birthday_dt.strftime("%d.%m")
+            if next_birthday_dt.year == 1:
+                number_day_mapping[diff.days] = next_birthday_dt.strftime("%d.%m")
+            else:
+                number_day_mapping[diff.days] = next_birthday_dt.strftime("%d.%m.%Y")
 
         log.trace("bdays parsed: %s", parsed_bdays)
 
