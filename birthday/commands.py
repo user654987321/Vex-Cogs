@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import datetime
+from zoneinfo import ZoneInfo
 from collections import defaultdict
 from typing import TYPE_CHECKING, Literal, Union
 
@@ -28,14 +29,14 @@ log = get_vex_logger(__name__)
 class BirthdayCommands(MixinMeta):
     async def setup_check(self, ctx: commands.Context) -> None:
         if ctx.guild is None:
-            raise CheckFailure("This command can only be used in a server.")
+            raise CheckFailure("Dieser Befehl kann nur in einem Server verwendet werden.")
             # this should have been caught by guild only check, but this keeps type checker happy
             # and idk what order decos run in so
 
         if not await self.check_if_setup(ctx.guild):
             await ctx.send(
-                "This command is not available until the cog has been setup. "
-                f"Get an admin to use `{ctx.clean_prefix}bdset interactive` to get started."
+                "Dieser Befehl ist erst verfügbar, wenn die Funktion fertig eingerichtet wurde. "
+                f"Lassen Sie einen Administrator „{ctx.clean_prefix}bdset interactive“ verwenden, um loszulegen."
             )
             raise CheckFailure("cog needs setup")
 
@@ -43,23 +44,18 @@ class BirthdayCommands(MixinMeta):
     @commands.before_invoke(setup_check)  # type:ignore
     @commands.hybrid_group(aliases=["bday"])
     async def birthday(self, ctx: commands.Context):
-        """Set and manage your birthday."""
+        """Lege deinen Geburtstag fest und verwalte diesen."""
 
     @birthday.command(aliases=["add"])
     async def set(self, ctx: commands.Context, *, birthday: BirthdayConverter):
         """
-        Set your birthday.
+        Gib dein Geburtstag ein.
 
-        You can optionally add in the year, if you are happy to share this.
+        Optional kannst du das Jahr hinzufügen, wenn du das gerne teilen möchtest.
 
-        If you use a date in the format xx/xx/xx or xx-xx-xx MM-DD-YYYY is assumed.
-
-        **Examples:**
-        - `[p]bday set 24th September`
-        - `[p]bday set 24th Sept 2002`
-        - `[p]bday set 9/24/2002`
-        - `[p]bday set 9-24-2002`
-        - `[p]bday set 9-24`
+        **Beispiele:**
+        - `[p]bday set 24.09`
+        - `[p]bday set 24.09.2000`
         """
         # guild only check in group
         if TYPE_CHECKING:
@@ -68,11 +64,14 @@ class BirthdayCommands(MixinMeta):
         # year as 1 means year not specified
 
         if birthday.year != 1 and birthday.year < MIN_BDAY_YEAR:
-            await ctx.send(f"I'm sorry, but I can't set your birthday to before {MIN_BDAY_YEAR}.")
+            await ctx.send(f"Es tut mir leid, aber ich kann deinen Geburtstag nicht auf einen Zeitpunkt vor {MIN_BDAY_YEAR} festlegen.")
             return
 
-        if birthday > datetime.datetime.utcnow():
-            await ctx.send("You can't be born in the future!")
+        if birthday.tzinfo is None:
+            birthday = birthday.replace(tzinfo=ZoneInfo("Europe/Berlin"))
+    
+        if birthday > datetime.datetime.now(ZoneInfo("Europe/Berlin")):
+            await ctx.send("Du kannst nicht in der Zukunft geboren werden!")
             return
 
         async with self.config.member(ctx.author).birthday() as bday:
@@ -81,21 +80,21 @@ class BirthdayCommands(MixinMeta):
             bday["day"] = birthday.day
 
         if birthday.year == 1:
-            str_bday = birthday.strftime("%B %d")
+            str_bday = birthday.strftime("%d.%m")
         else:
-            str_bday = birthday.strftime("%B %d, %Y")
+            str_bday = birthday.strftime("%d.%m.%Y")
 
-        await ctx.send(f"Your birthday has been set as {str_bday}.")
+        await ctx.send(f"Dein Geburtztag wurde zu **{str_bday}** gesetzt.")
 
     @birthday.command(aliases=["delete", "del"])
     async def remove(self, ctx: commands.Context):
-        """Remove your birthday."""
+        """Entfernen Sie Ihren Geburtstag."""
         # guild only check in group
         if TYPE_CHECKING:
             assert isinstance(ctx.author, discord.Member)
             assert ctx.guild is not None
 
-        m = await ctx.send("Are you sure?")
+        m = await ctx.send("Bist du sicher?")
         start_adding_reactions(m, ReactionPredicate.YES_OR_NO_EMOJIS)
         check = ReactionPredicate.yes_or_no(m, ctx.author)  # type:ignore
 
@@ -107,11 +106,11 @@ class BirthdayCommands(MixinMeta):
             return
 
         if check.result is False:
-            await ctx.send("Cancelled.")
+            await ctx.send("Abgebrochen.")
             return
 
         await self.config.member(ctx.author).birthday.set({})
-        await ctx.send("Your birthday has been removed.")
+        await ctx.send("Dein Geburtstag wurde entfernt.")
 
     @birthday.command()
     async def upcoming(self, ctx: commands.Context, days: int = 7):
@@ -130,7 +129,7 @@ class BirthdayCommands(MixinMeta):
             await ctx.send("You must enter a number of days greater than 0 and smaller than 365.")
             return
 
-        today_dt = datetime.datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_dt = datetime.datetime.now(ZoneInfo("Europe/Berlin")).replace(hour=0, minute=0, second=0, microsecond=0)
 
         all_birthdays: dict[int, dict[str, dict]] = await self.config.all_members(ctx.guild)
 
@@ -259,7 +258,9 @@ class BirthdayAdminCommands(MixinMeta):
             if conf["time_utc_s"] is None:
                 time = "invalid"
             else:
-                time = datetime.datetime.utcfromtimestamp(conf["time_utc_s"]).strftime("%H:%M UTC")
+                dt_utc = datetime.datetime.fromtimestamp(conf["time_utc_s"], tz=datetime.timezone.utc)
+                dt_berlin = dt_utc.astimezone(ZoneInfo("Europe/Berlin"))
+                time = dt_berlin.strftime("%H:%M") + " MEZ/MESZ"
                 table.add_row("Time", time)
 
             table.add_row("Allow role mentions", str(conf["allow_role_mention"]))
@@ -317,7 +318,7 @@ class BirthdayAdminCommands(MixinMeta):
         if TYPE_CHECKING:
             assert ctx.guild is not None
 
-        midnight = datetime.datetime.utcnow().replace(
+        midnight = datetime.datetime.now(ZoneInfo("Europe/Berlin")).replace(
             year=1, month=1, day=1, hour=0, minute=0, second=0, microsecond=0
         )
 
@@ -332,12 +333,16 @@ class BirthdayAdminCommands(MixinMeta):
 
         m = (
             "Time set! I'll send the birthday message and update the birthday role at"
-            f" {time.strftime('%H:%M')} UTC."
+            f" {time.strftime('%H:%M')} MEZ/MESZ."
         )
 
         if old is not None:
-            old_dt = datetime.datetime.utcfromtimestamp(old)
-            if time > old_dt and time > datetime.datetime.utcnow():
+            old_dt = (
+                datetime.datetime.fromtimestamp(old, tz=datetime.timezone.utc)
+                .astimezone(ZoneInfo("Europe/Berlin"))
+            )
+            now_berlin = datetime.datetime.now(ZoneInfo("Europe/Berlin"))
+            if time > old_dt and time > now_berlin:
                 m += (
                     "\n\nThe time you set is after the time I currently send the birthday message,"
                     " so the birthday message will be sent for a second time."
@@ -523,7 +528,7 @@ class BirthdayAdminCommands(MixinMeta):
             await ctx.send(f"I'm sorry, but I can't set a birthday to before {MIN_BDAY_YEAR}.")
             return
 
-        if birthday > datetime.datetime.utcnow():
+        if birthday > datetime.datetime.now(ZoneInfo("Europe/Berlin")):
             await ctx.send("You can't be born in the future!")
             return
 
