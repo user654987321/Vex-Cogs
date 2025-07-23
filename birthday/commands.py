@@ -162,9 +162,9 @@ class BirthdayCommands(MixinMeta):
                 )
                 number_day_mapping[0] = "Today"
                 continue
-
-            this_year_bday = birthday_dt.replace(year=today_dt.year)
-            next_year_bday = birthday_dt.replace(year=today_dt.year + 1)
+            today = datetime.now(ZoneInfo("Europe/Berlin"))
+            this_year_bday = datetime(year=today.year, month=month, day=day, tzinfo=ZoneInfo("Europe/Berlin"))
+            next_year_bday = datetime(year=today.year + 1, month=month, day=day, tzinfo=ZoneInfo("Europe/Berlin"))
             next_birthday_dt = this_year_bday if this_year_bday > today_dt else next_year_bday
 
             diff = next_birthday_dt - today_dt
