@@ -183,7 +183,7 @@ class BirthdayCommands(MixinMeta):
                     else (f" will turn {next_bday_year - birthday_dt.year}")
                 )
             )
-            number_day_mapping[diff.days] = next_birthday_dt.strftime("%B %d")
+            number_day_mapping[diff.days] = next_birthday_dt.strftime("%d.%m")
 
         log.trace("bdays parsed: %s", parsed_bdays)
 
@@ -538,9 +538,9 @@ class BirthdayAdminCommands(MixinMeta):
             bday["day"] = birthday.day
 
         if birthday.year == 1:
-            str_bday = birthday.strftime("%B %d")
+            str_bday = birthday.strftime("%d.%m")
         else:
-            str_bday = birthday.strftime("%B %d, %Y")
+            str_bday = birthday.strftime("%d.%m.%Y")
 
         await ctx.send(f"{user.name}'s birthday has been set as {str_bday}.")
 
