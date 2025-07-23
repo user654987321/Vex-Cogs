@@ -163,8 +163,8 @@ class BirthdayCommands(MixinMeta):
                 number_day_mapping[0] = "Today"
                 continue
             today = datetime.datetime.now(ZoneInfo("Europe/Berlin"))
-            this_year_bday = datetime.datetime(year=today.year, month=month, day=day, tzinfo=ZoneInfo("Europe/Berlin"))
-            next_year_bday = datetime.datetime(year=today.year + 1, month=month, day=day, tzinfo=ZoneInfo("Europe/Berlin"))
+            this_year_bday = datetime.datetime(year=today.year, month=birthday_dt.month, day=birthday_dt.day, tzinfo=ZoneInfo("Europe/Berlin"))
+            next_year_bday = datetime.datetime(year=today.year + 1, month=birthday_dt.month, day=birthday_dt.day, tzinfo=ZoneInfo("Europe/Berlin"))
             next_birthday_dt = this_year_bday if this_year_bday > today else next_year_bday
 
             diff = next_birthday_dt - today_dt
