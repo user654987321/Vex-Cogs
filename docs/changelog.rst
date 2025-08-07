@@ -243,6 +243,14 @@ BetterUptime
 ============
 
 *********
+``2.1.5``
+*********
+
+2025-08-03
+
+- Fix to support breaking changed in Kaleido 1.0.0 for plotting graphs
+
+*********
 ``2.1.4``
 *********
 
@@ -597,6 +605,14 @@ ButtonPoll
 ==========
 
 *********
+``1.2.1``
+*********
+
+2025-08-03
+
+- Fix to support breaking changed in Kaleido 1.0.0 for plotting graphs
+
+*********
 ``1.2.0``
 *********
 
@@ -937,6 +953,14 @@ GoogleTrends
 ============
 
 *********
+``1.1.1``
+*********
+
+2025-08-03
+
+- Fix to support breaking changed in Kaleido 1.0.0 for plotting graphs
+
+*********
 ``1.1.0``
 *********
 
@@ -1027,6 +1051,38 @@ RolePlay
 =========
 StatTrack
 =========
+
+**********
+``1.10.4``
+**********
+
+2025-08-05
+
+- Improve Kaleido error handling and messages
+
+**********
+``1.10.3``
+**********
+
+2025-08-03
+
+- Move Kaleido setup code to common utils
+
+**********
+``1.10.2``
+**********
+
+2025-08-03
+
+- Improve Kaleido first setup code for installation of backend rendering engine
+
+**********
+``1.10.1``
+**********
+
+2025-08-03
+
+- Fix to support breaking changed in Kaleido 1.0.0 for plotting graphs
 
 **********
 ``1.10.0``
