@@ -118,8 +118,8 @@ class BirthdayCommands(MixinMeta):
         """Sieh dir die kommenden Gebutztage an, standardmäßig 7 Tage.
 
         **Examples:**
-        - `[p]birthday upcoming` - default of 7 days
-        - `[p]birthday upcoming 14` - 14 days
+        - `[p]birthday upcoming` - standart: 7 days
+        - `[p]birthday upcoming 14` - 14 Tage
         """
         # guild only check in group
         if TYPE_CHECKING:
