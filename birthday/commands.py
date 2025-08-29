@@ -200,7 +200,7 @@ class BirthdayCommands(MixinMeta):
         MAX_PER_PAGE = 25
 
         if len(sorted_parsed_bdays) < MAX_PER_PAGE:
-            embed = discord.Embed(title="Bevorstehenden Geburtstage", colour=await ctx.embed_colour())
+            embed = discord.Embed(title="Bevorstehende Geburtstage", colour=await ctx.embed_colour())
             for day, members in sorted_parsed_bdays:
                 embed.add_field(name=number_day_mapping.get(day), value="\n".join(members))
             await ctx.send(embed=embed)
@@ -211,7 +211,7 @@ class BirthdayCommands(MixinMeta):
             embeds = []
             for i in range(pages):
                 embed = discord.Embed(
-                    title=f"Bevorstehenden Geburtstage",
+                    title=f"Bevorstehende Geburtstage",
                     description=f"Seite {i + 1}/{pages}",
                     colour=await ctx.embed_colour(),
                 )
