@@ -181,7 +181,7 @@ class BirthdayCommands(MixinMeta):
                 + (
                     ""
                     if birthday_dt.year == 1
-                    else (f" will turn {next_bday_year - birthday_dt.year}")
+                    else (f" wird {next_bday_year - birthday_dt.year}")
                 )
             )
             if next_birthday_dt.year == 1:
