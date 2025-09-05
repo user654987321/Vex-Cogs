@@ -85,7 +85,7 @@ class BirthdayCommands(MixinMeta):
         else:
             str_bday = birthday.strftime("%d.%m.%Y")
 
-        await ctx.send(f"Dein Geburtztag wurde zu **{str_bday}** gesetzt.")
+        await ctx.send(f"Dein Geburtztag wurde auf den **{str_bday}** gesetzt.")
 
     @birthday.command(aliases=["delete", "del"])
     async def remove(self, ctx: commands.Context):
