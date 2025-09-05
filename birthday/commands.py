@@ -89,7 +89,7 @@ class BirthdayCommands(MixinMeta):
 
     @birthday.command(aliases=["delete", "del"])
     async def remove(self, ctx: commands.Context):
-        """Entfernen Sie Ihren Geburtstag."""
+        """Entferne deinen Geburtstag."""
         # guild only check in group
         if TYPE_CHECKING:
             assert isinstance(ctx.author, discord.Member)
